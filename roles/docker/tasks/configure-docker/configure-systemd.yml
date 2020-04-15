@@ -1,0 +1,46 @@
+- name: Combine all systemd service configuration options
+  set_fact:
+    _systemd_service_config: "{{ docker_systemd_service_config_tweaks + docker_systemd_service_config }}"
+
+- name: Ensure /etc/systemd/system/docker.service.d directory exists
+  become: true
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+    mode: 0755
+
+- name: Setup default Docker drop-in to enable use of environment file
+  become: true
+  template:
+    src: drop-ins/default.conf.j2
+    dest: /etc/systemd/system/docker.service.d/default.conf
+  register: _systemd_docker_dropin
+  notify: restart docker
+  vars:
+    systemd_envs_dir: "{{ docker_envs_dir[_docker_os_dist] }}"
+    systemd_service_conf: "{{ _systemd_service_config }}"
+
+- name: Combine Docker daemon environment variable configuration
+  set_fact:
+    docker_service_envs: "{{ docker_service_envs | combine(_docker_service_opts) | combine(docker_daemon_envs) }}"
+  vars:
+    _docker_service_opts:
+      DOCKER_OPTS: "{{ docker_daemon_opts }}"
+
+- name: Setup Docker environment file {{ docker_envs_dir[_docker_os_dist] }}/docker-envs
+  become: true
+  template:
+    src: docker-envs.j2
+    dest: "{{ docker_envs_dir[_docker_os_dist] }}/docker-envs"
+  notify: restart docker
+  vars:
+    docker_envs: "{{ docker_service_envs }}"
+
+- name: Force daemon reload of systemd
+  become: true
+  systemd:
+    daemon_reload: yes
+  notify: restart docker
+  when: _systemd_docker_dropin is changed
+  tags:
+    - skip_ansible_lint

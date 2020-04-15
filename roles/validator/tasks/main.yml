@@ -1,0 +1,61 @@
+---
+
+- name: Get public IP
+  ipify_facts:
+  register: public_ip
+
+- name: Create node.toml
+  template: src=node.toml.j2 dest={{ home }}/node.toml owner={{ username }} group={{ username }} mode=0644
+
+- name: Install {{ NODE_PWD }} file
+  template: src=node_pwd.j2 dest={{ home }}/{{ NODE_PWD }} owner={{ username }} group={{ username }} mode=0600
+
+- name: Config MINING_KEYFILE file
+  copy:
+    content: "{{ MINING_KEYFILE }}"
+    dest: "{{ home }}/parity_data/keys/{{ GENESIS_NETWORK_NAME }}/validator.key.{{ MINING_ADDRESS }}"
+
+- name: Clone {{ MAIN_REPO_FETCH }}/poa-scripts-validator repo from GitHub
+  git:
+    repo: "https://github.com/{{ MAIN_REPO_FETCH }}/poa-scripts-validator"
+    dest: "{{ home }}/poa-scripts-validator"
+    version: "{{ SCRIPTS_VALIDATOR_BRANCH }}"
+    force: yes
+
+- name: Link node.toml file
+  file:
+    src: "{{ home }}/node.toml"
+    dest: "{{ home }}/poa-scripts-validator/node.toml"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    state: link
+
+- name: Set up owner and group on poa-scripts-validator files
+  file: path={{ home }}/poa-scripts-validator owner={{ username }} group={{ username }} recurse=yes
+
+- name: install npm transferRewardToPayoutKey
+  shell: npm install
+  args:
+    chdir: "{{ home }}/poa-scripts-validator/transferRewardToPayoutKey"
+    creates: "{{ home }}/poa-scripts-validator/transferRewardToPayoutKey/node_modules"
+  become: true
+  become_user: "{{ username }}"
+
+- name: replace key manager address in poa-scripts-validators
+  shell: sed -i -E "s/(\"addr\"\:\ \").*(\")/\1{{ KEYS_MANAGER_ADDRESS }}\2/g" {{ home }}/poa-scripts-validator/config.json
+  become: true
+  become_user: "{{ username }}"
+
+- name: Install Payout task.
+  template: src=transferRewardToPayoutKey.j2 dest=/etc/cron.hourly/transferRewardToPayoutKey owner=root group=root mode=0755
+
+- name: restart poa-parity
+  service: name=poa-parity state=restarted
+
+- name: Setup ufw firewall
+  import_tasks: ufw.yml
+  when: install_firewall
+
+- name: restart machine after setup
+  shell: shutdown -r 1
+  when: reboot_after_completion == true

@@ -1,0 +1,35 @@
+---
+
+become_method: sudo
+
+NODE_PWD: "node.pwd" # don't change this one
+
+SCRIPTS_MOC_BRANCH: "mainnet"
+SCRIPTS_VALIDATOR_BRANCH: "mainnet"
+MAIN_CHAINSPEC_REPO_FETCH: "iExecBlockchainComputing"
+MAIN_REPO_FETCH: "poanetwork"
+GENESIS_BRANCH: "viviani"
+GENESIS_NETWORK_NAME: "viviani"
+
+MOC_ADDRESS: "0x44B318A63D2E69d4Cd6144B33B3e823Fa02Cec40"
+BLK_GAS_LIMIT: "6700000"
+NODE_FULLNAME: "viviani"
+NODE_ADMIN_EMAIL: "infra@iex.ec"
+
+LETSENCRYPT_MAIL: "infra@iex.ec"
+LETSENCRYPT_DOMAIN_NAME_1: "netstat-viviani.iex.ec"
+PROXY_PORT_1: "3000"
+nginx_headers: "on"
+
+NETSTATS_SECRET: "tbd"
+
+username: "netstat"
+users:
+  - name: "{{ username }}"
+home: "/home/{{ username }}"
+
+configure_extended_tcp_settings: false
+NETSTATS_SERVER: "https://netstat-viviani.iex.ec"
+
+install_debug_tools: "yes"
+reboot_after_completion: false

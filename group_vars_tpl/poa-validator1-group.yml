@@ -1,0 +1,38 @@
+---
+
+become_method: sudo
+
+NODE_PWD: "node.pwd" # don't change this one
+
+SCRIPTS_MOC_BRANCH: "mainnet"
+SCRIPTS_VALIDATOR_BRANCH: "core"
+MAIN_CHAINSPEC_REPO_FETCH: "iExecBlockchainComputing"
+MAIN_REPO_FETCH: "iExecBlockchainComputing"
+GENESIS_BRANCH: "viviani"
+GENESIS_NETWORK_NAME: "viviani"
+
+MOC_ADDRESS: "0x44B318A63D2E69d4Cd6144B33B3e823Fa02Cec40"
+BLK_GAS_LIMIT: "6700000"
+NODE_FULLNAME: "viviani-validator1"
+NODE_ADMIN_EMAIL: "infra@iex.ec"
+
+NETSTATS_SERVER: "https://netstat-viviani.iex.ec"
+NETSTATS_SECRET: "tbd"
+
+MIN_GAS_PRICE: 0
+
+KEYS_MANAGER_ADDRESS: "0x014a262ccbb22fa76b54629fa0c269b782827d09"
+
+MINING_KEYFILE: 'tbd'
+MINING_ADDRESS: "tbd"
+MINING_KEYPASS: "tbd"
+
+username: "validator"
+users:
+  - name: "{{ username }}"
+home: "/home/{{ username }}"
+
+validator_archive: "off"
+
+install_debug_tools: "yes"
+reboot_after_completion: false

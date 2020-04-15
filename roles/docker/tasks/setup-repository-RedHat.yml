@@ -1,0 +1,40 @@
+---
+- name: Include tasks from setup of repositories for CentOS
+  include_tasks: setup-repository-CentOS.yml
+
+- name: RHEL 7 repositories
+  block:
+    - name: Set internal facts for repository handling
+      set_fact:
+        _rhel_repo_check_cmd:
+          enabled:
+            sm: subscription-manager repos --list-enabled
+            yum: yum repolist enabled
+          disabled:
+            sm: subscription-manager repos --list-disabled
+            yum: yum repolist disabled
+        _rhel_cmd_enable_disable_repo:
+          enabled:
+            sm: subscription-manager repos --enable=
+            yum: "yum-config-manager --enable "
+          disabled:
+            sm: subscription-manager repos --disable=
+            yum: "yum-config-manager --disable "
+        _rhel_repos: "{{ docker_rhel_repos }}"
+
+    - name: Enable and disable repositories (RedHat)
+      become: true
+      shell: "{{ _rhel_repo_check_cmd[item.state][item.repo_manager]  }} \
+        | grep {{ item.id }} && exit 0 \
+        || {{ _rhel_cmd_enable_disable_repo[item.state][item.repo_manager] }}{{ item.id }} \
+        && exit 2"
+      with_items: "{{ _rhel_repos }}"
+      register: _cmd_rhel_repo_enabled_disabled
+      changed_when: _cmd_rhel_repo_enabled_disabled.rc == 2
+      failed_when: _cmd_rhel_repo_enabled_disabled.rc not in [ 0, 2 ]
+      tags:
+        - skip_ansible_lint
+
+  when: 
+    - docker_network_access | bool
+    - _docker_os_dist_major_version == '7'

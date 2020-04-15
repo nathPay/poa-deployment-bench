@@ -1,0 +1,35 @@
+---
+
+become_method: sudo
+
+NODE_PWD: "node.pwd" # don't change this one
+
+SCRIPTS_MOC_BRANCH: "" #chainName-init
+SCRIPTS_VALIDATOR_BRANCH: "master"
+MAIN_CHAINSPEC_REPO_FETCH: "" #repo (nathPay)
+# MAIN_REPO_FETCH: "iExecBlockchainComputing"
+GENESIS_BRANCH: "" #chainName
+GENESIS_NETWORK_NAME: "" #chainName
+
+MOC_ADDRESS: "" #0xmocAddress
+BLK_GAS_LIMIT: "6700000"
+NODE_FULLNAME: "" #chainName-moc
+NODE_ADMIN_EMAIL: "" #email@exem.ple
+
+NETSTATS_SERVER: "" #ip
+NETSTATS_SECRET: "whatever"
+
+MIN_GAS_PRICE: 0
+
+MOC_KEYPASS: "whatever" #encrypted wallet password
+MOC_KEYFILE: '' #encrypted wallet
+
+username: "moc"
+users:
+  - name: "{{ username }}"
+home: "/home/{{ username }}"
+
+moc_archive: "off"
+
+install_debug_tools: "yes"
+reboot_after_completion: false

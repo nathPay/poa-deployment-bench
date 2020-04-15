@@ -1,0 +1,4 @@
+- hosts: netstat
+  become: True
+  roles:
+    - netstat

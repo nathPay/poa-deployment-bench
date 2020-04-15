@@ -1,0 +1,3 @@
+---
+- name: Include tasks from setup of repositories for Ubuntu
+  include_tasks: setup-repository-Ubuntu.yml

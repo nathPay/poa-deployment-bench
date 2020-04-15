@@ -1,0 +1,4 @@
+- hosts: bootnode
+  become: True
+  roles:
+    - bootnode

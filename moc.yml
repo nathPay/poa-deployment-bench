@@ -1,0 +1,4 @@
+- hosts: moc
+  become: True
+  roles:
+    - moc

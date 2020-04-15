@@ -1,0 +1,54 @@
+[parity]
+chain = "spec.json"
+base_path = "parity_data"
+{% if moc_archive|default("off") == "on" %}
+auto_update = "all"
+{% endif %}
+
+[network]
+reserved_peers="{{ home }}/bootnodes.txt"
+nat="extip:{{ public_ip.ansible_facts.ipify_public_ip }}"
+port = 30303
+{% if moc_archive|default("off") == "on" %}
+snapshot_peers = 500
+discovery = false
+allow_ips = "public"
+min_peers = 5
+max_peers = 10
+{% endif %}
+
+[rpc]
+apis = ["all"]
+
+[account]
+password = ["{{ NODE_PWD }}"]
+#unlock = ["{{ MOC_ADDRESS }}"]
+
+[mining]
+usd_per_tx = "0"
+force_sealing = true
+engine_signer = "{{ MOC_ADDRESS }}"
+gas_floor_target = "{{ BLK_GAS_LIMIT }}"
+reseal_on_txs = "none"
+min_gas_price = {{ MIN_GAS_PRICE }}
+
+{% if moc_archive|default("off") == "on" %}
+[ui]
+disable = true
+
+[dapps]
+disable = true
+
+[snapshots]
+disable_periodic = false
+
+[footprint]
+tracing = "on"
+pruning = "archive"
+pruning_history = 1200
+fat_db = "on"
+cache_size_db = 12000
+{% endif %}
+
+[misc]
+log_file = "{{ home }}/logs/parity.log"

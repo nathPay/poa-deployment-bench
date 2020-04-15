@@ -1,0 +1,4 @@
+- hosts: validator
+  become: True
+  roles:
+    - validator

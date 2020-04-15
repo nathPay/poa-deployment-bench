@@ -1,0 +1,152 @@
+---
+# vars file for ansible-role-docker-ce
+docker_repository_related_packages:
+  CentOS:
+    - yum-utils
+  RedHat:
+    - yum-utils
+  Ubuntu:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+  Debian:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg2
+    - software-properties-common
+
+docker_repository_url:
+  CentOS: https://download.docker.com/linux/centos/docker-ce.repo
+  RedHat: https://download.docker.com/linux/centos/docker-ce.repo
+  Fedora: https://download.docker.com/linux/fedora/docker-ce.repo
+
+docker_channels:
+  - stable
+  - nightly
+  - test
+  - edge
+
+docker_cmd_enable_disable_edge_repo:
+  CentOS: yum-config-manager --{{ (_item_enabled == true) | ternary('enable','disable') }} docker-ce-{{ item }}
+  RedHat: yum-config-manager --{{ (_item_enabled == true) | ternary('enable','disable') }} docker-ce-{{ item }}
+  Fedora: dnf config-manager --set-{{ (_item_enabled == true) | ternary('enabled','disabled') }} docker-ce-{{ item }}
+
+docker_cmd_update_repo_cache:
+  CentOS: yum makecache fast
+  RedHat: yum makecache
+  Fedora: dnf makecache
+  Ubuntu: apt-get update
+  Debian: apt-get update
+
+docker_envs_dir:
+  CentOS: /etc/sysconfig
+  RedHat: /etc/sysconfig
+  Fedora: /etc/sysconfig
+  Ubuntu: /etc/default
+  Debian: /etc/default
+
+docker_packages:
+  - docker-ce-cli
+  - docker-ce
+  - containerd.io
+
+docker_os_pkg_version_separator:
+  CentOS: '-'
+  RedHat: '-'
+  Fedora: '-'
+  Ubuntu: '='
+  Debian: '='
+
+docker_old_packages:
+  CentOS:
+    - docker
+    - docker-client
+    - docker-client-latest
+    - docker-common
+    - docker-latest
+    - docker-latest-logrotate
+    - docker-logrotate
+    - docker-selinux
+    - docker-engine-selinux
+    - docker-engine
+  RedHat:
+    - docker
+    - docker-client
+    - docker-client-latest
+    - docker-common
+    - docker-latest
+    - docker-latest-logrotate
+    - docker-logrotate
+    - docker-selinux
+    - docker-engine-selinux
+    - docker-engine
+    - docker-rhel-*-plugin
+  Fedora:
+    - docker
+    - docker-client
+    - docker-client-latest
+    - docker-common
+    - docker-latest
+    - docker-latest-logrotate
+    - docker-logrotate
+    - docker-selinux
+    - docker-engine-selinux
+    - docker-engine
+  Ubuntu:
+    - docker
+    - docker-engine
+    - docker.io
+    - containerd
+    - runc
+  Debian:
+    - docker
+    - docker-engine
+    - docker.io
+    - containerd
+    - runc
+
+docker_predefined_packages_os: []
+
+docker_predefined_packages_pip:
+  CentOS:
+    sdk:
+      - docker
+    compose:
+      - docker-compose
+    stack:
+      - jsondiff
+      - pyyaml
+  RedHat:
+    sdk:
+      - docker
+    compose:
+      - docker-compose
+    stack:
+      - jsondiff
+      - pyyaml
+  Fedora:
+    sdk:
+      - docker
+    compose:
+      - docker-compose
+    stack:
+      - jsondiff
+      - pyyaml
+  Ubuntu:
+    sdk:
+      - docker
+    compose:
+      - docker-compose
+    stack:
+      - jsondiff
+      - pyyaml
+  Debian:
+    sdk:
+      - docker
+    compose:
+      - docker-compose
+    stack:
+      - jsondiff
+      - pyyaml

@@ -1,0 +1,57 @@
+---
+- name: Prepare host
+  import_playbook: prepare.yml
+
+- name: Prepare host with additional disk
+  hosts: test-host
+  vars:
+    docker_mount_point: "{{ docker_mount_point_override|default('/var/lib/docker') }}"
+  tasks:
+    - name: Ensure dependencies are installed (All)
+      package:
+        name: "{{ item }}"
+        state: present
+      become: true
+      with_items:
+        - parted
+
+    - name: Ensure dependencies are installed (CentOS)
+      package:
+        name: e4fsprogs
+        state: present
+      become: true
+      when: ansible_distribution == "CentOS"
+
+    - name: Create partition {{ lvm_device }}1
+      parted:
+        device: "{{ lvm_device }}"
+        number: 1
+        flags: [ lvm ]
+        part_end: 1GiB
+        state: present
+      become: true
+    - name: Create partition {{ lvm_device }}2
+      parted:
+        device: "{{ lvm_device }}"
+        number: 2
+        flags: [ lvm ]
+        part_start: 1GiB
+        state: present
+      become: true
+    - name: Ensure file system is EXT4 for {{ lvm_device }}1
+      filesystem:
+        fstype: ext4
+        dev: "{{ lvm_device }}1"
+      become: true
+    - name: Ensure {{ docker_mount_point }} directory exists
+      file:
+        path: "{{ docker_mount_point }}"
+        state: directory
+      become: true
+    - name: Ensure {{ docker_mount_point }} is mounted
+      mount:
+        path: "{{ docker_mount_point }}"
+        src: "{{ lvm_device }}1"
+        fstype: ext4
+        state: mounted
+      become: true
