@@ -1,0 +1,31 @@
+- name: Bootnode deployment
+  import_playbook: bootnode.yml
+  tags: bootnode
+
+- name: Moc deployment
+  import_playbook: moc.yml
+  tags: moc
+
+- name: Netstat deployment
+  import_playbook: netstat.yml
+  tags: netstat
+
+- name: Validator deployment
+  import_playbook: validator.yml
+  tags: validator
+
+- name: Blockscout deployment
+  import_playbook: blockscout.yml
+  tags: blockscout
+
+- name: Dapps UI deployment
+  import_playbook: dapps-ui.yml
+  tags: dapps-ui
+
+- name: Bridge UI deployment
+  import_playbook: bridge-ui.yml
+  tags: bridge-ui
+
+- name: Bridge deployment
+  import_playbook: bridge.yml
+  tags: bridge
