@@ -1,0 +1,34 @@
+---
+- name: Clone token bridge repo from GitHub
+  git:
+    repo: "https://github.com/{{ MAIN_REPO_FETCH }}/tokenbridge"
+    dest: "/home/ubuntu/tokenbridge"
+    version: "{{ tokenbridge_version }}"
+    force: yes
+
+- name: Copy environment file for tokenbridge ui
+  template: src=environment.j2 dest=/home/ubuntu/tokenbridge/ui/.env owner=ubuntu group=ubuntu mode=0644
+
+- name: Building and starting tokenbridge ui (can take > 10 min)
+  shell: "docker-compose -f /home/ubuntu/tokenbridge/ui/docker-compose.yml --project-directory /home/ubuntu/tokenbridge/ui/ up -d --build"
+
+- name: Copy environment file for tokenbridge monitor
+  template: src=environment-monitor.j2 dest=/home/ubuntu/tokenbridge/monitor/.env owner=ubuntu group=ubuntu mode=0644
+
+- name: Building and starting tokenbridge monitor (can take > 10 min)
+  shell: "docker-compose -f /home/ubuntu/tokenbridge/monitor/docker-compose.yml --project-directory /home/ubuntu/tokenbridge/monitor/ up -d --build"
+
+- name: Adding cronjob to update tokenbridge monitor
+  cron:
+    name: tokenbridge_monitor_update
+    minute: "*/4"
+    job: cd /home/ubuntu/tokenbridge/monitor; docker-compose exec -T monitor yarn check-all >>cronWorker.out 2>>cronWorker.err
+  when: TOKENBRIDGE_MONITOR_UPDATE is defined
+
+- name: Setup ufw firewall
+  import_tasks: ufw.yml
+  when: install_firewall
+
+- name: restart machine after setup
+  shell: shutdown -r 1
+  when: reboot_after_completion == true

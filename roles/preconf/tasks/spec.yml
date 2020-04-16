@@ -1,0 +1,16 @@
+---
+- name: Copy spec.json to remote machine
+  copy: content={{ spec_json }} dest={{ home }}/spec.json mode=0644 group={{ username }} owner={{ username }} force=yes
+  when: spec_json != ""
+
+- name: Copy bootnodes.txt to remote machine
+  copy: content={{ bootnodes_txt }} dest={{ home }}/bootnodes.txt mode=0644 group={{ username }} owner={{ username }} force=yes
+  when: bootnodes_txt != ""
+
+- name: Download spec.json
+  get_url: url="https://raw.githubusercontent.com/{{ MAIN_CHAINSPEC_REPO_FETCH }}/poa-chain-spec/{{ GENESIS_BRANCH }}/spec.json" dest={{ home }}/ mode=0644 group={{ username }} owner={{ username }}
+  when: spec_json == ""
+
+- name: Download bootnodes.txt
+  get_url: url="https://raw.githubusercontent.com/{{ MAIN_CHAINSPEC_REPO_FETCH }}/poa-chain-spec/{{ GENESIS_BRANCH }}/bootnodes.txt" dest={{ home }}/ mode=0644 group={{ username }} owner={{ username }}
+  when: bootnodes_txt == ""

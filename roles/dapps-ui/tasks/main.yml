@@ -1,0 +1,53 @@
+---
+- name: Clone poa-dapps-keys-generation repo from GitHub
+  git:
+    repo: "https://github.com/{{ MAIN_REPO_FETCH }}/poa-dapps-keys-generation"
+    dest: "/home/ubuntu/poa-dapps-keys-generation"
+    version: "{{ poa_dapps_keys_generation_version }}"
+    force: yes
+
+- name: Copy Dockerfile file for poa-dapps-keys-generation
+  template: src=Dockerfile.j2 dest=/home/ubuntu/poa-dapps-keys-generation/Dockerfile owner=ubuntu group=ubuntu mode=0644
+
+# - name: Creating constants.js file for keys generation Dapp
+#   template: src=constants-key-generation.js.j2 dest=/home/ubuntu/poa-dapps-keys-generation/src/utils/constants.js owner=ubuntu group=ubuntu mode=0644
+
+- name: Clone poa-dapps-validators repo from GitHub
+  git:
+    repo: "https://github.com/{{ MAIN_REPO_FETCH }}/poa-dapps-validators"
+    dest: "/home/ubuntu/poa-dapps-validators"
+    version: "{{ poa_dapps_validators_version }}"
+    force: yes
+
+- name: Copy Dockerfile file for poa-dapps-validators
+  template: src=Dockerfile.j2 dest=/home/ubuntu/poa-dapps-validators/Dockerfile owner=ubuntu group=ubuntu mode=0644
+
+# - name: Creating constants.js file for validators Dapp
+#   template: src=constants-validators.js.j2 dest=/home/ubuntu/poa-dapps-validators/src/utils/constants.js owner=ubuntu group=ubuntu mode=0644
+
+- name: Clone poa-dapps-voting repo from GitHub
+  git:
+    repo: "https://github.com/{{ MAIN_REPO_FETCH }}/poa-dapps-voting"
+    dest: "/home/ubuntu/poa-dapps-voting"
+    version: "{{ poa_dapps_voting_version }}"
+    force: yes
+
+- name: Copy Dockerfile file for poa-dapps-voting
+  template: src=Dockerfile.j2 dest=/home/ubuntu/poa-dapps-voting/Dockerfile owner=ubuntu group=ubuntu mode=0644
+
+# - name: Creating constants.js file for voting Dapp
+#   template: src=constants-voting.js.j2 dest=/home/ubuntu/poa-dapps-voting/src/utils/constants.js owner=ubuntu group=ubuntu mode=0644
+
+- name: Copy docker-compose file for dapps
+  template: src=docker-compose.yml.j2 dest=/home/ubuntu/docker-compose.yml owner=ubuntu group=ubuntu mode=0644
+
+- name: Building and starting dapps (can take > 10 minutes)
+  shell: "docker-compose -f /home/ubuntu/docker-compose.yml --project-directory /home/ubuntu up -d --build"
+
+- name: Setup ufw firewall
+  import_tasks: ufw.yml
+  when: install_firewall
+
+- name: restart machine after setup
+  shell: shutdown -r 1
+  when: reboot_after_completion == true

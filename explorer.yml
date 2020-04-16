@@ -1,0 +1,4 @@
+- hosts: explorer
+  become: True
+  roles:
+    - explorer

@@ -1,0 +1,4 @@
+- hosts: dapps-ui
+  become: True
+  roles:
+    - dapps-ui

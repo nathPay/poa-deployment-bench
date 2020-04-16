@@ -1,0 +1,18 @@
+---
+
+user: ubuntu
+
+allow_blockscout_ssh: true
+allow_blockscout_p2p: true
+allow_blockscout_http: false
+
+username: "blockscout"
+users:
+- name: "{{ username }}"
+home: "/home/{{ username }}"
+
+reboot_after_completion: true
+install_debug_tools: "no"
+install_firewall: false
+
+indexer_memory_limit: 8

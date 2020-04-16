@@ -1,0 +1,25 @@
+[Unit]
+Description=poa blockscout service
+After=network.target
+[Service]
+User=root
+Group=root
+WorkingDirectory={{ home }}/blockscout
+Restart=on-failure
+RestartSec=5
+Environment="SUBNETWORK={{ GENESIS_NETWORK_NAME }}"
+Environment="COIN={{ COIN }}"
+Environment="RELEASE_LINK={{ RELEASE_LINK }}"
+Environment="BLOCKSCOUT_VERSION={{ blockscout_version }}"
+Environment="COIN_GECKO_ID={{ COIN_GECKO_ID }}"
+Environment="MIX_ENV={{ MIX_ENV }}"
+Environment="ETHEREUM_JSONRPC_VARIANT={{ ETHEREUM_JSONRPC_VARIANT }}"
+Environment="ETHEREUM_JSONRPC_HTTP_URL={{ ETHEREUM_JSONRPC_HTTP_URL }}"
+Environment="ETHEREUM_JSONRPC_TRACE_URL={{ ETHEREUM_JSONRPC_HTTP_URL }}"
+Environment="ETHEREUM_JSONRPC_WS_URL={{ ETHEREUM_JSONRPC_WS_URL }}"
+Environment="PORT={{ PORT }}"
+Environment="SECRET_KEY_BASE={{ SECRET_KEY_BASE }}"
+ExecStart=/usr/bin/mix phx.server
+Type=simple
+[Install]
+WantedBy=multi-user.target

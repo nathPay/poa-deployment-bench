@@ -1,0 +1,6 @@
+---
+- import_tasks: packages-ubuntu.yml
+  when: ansible_os_family == "Debian"
+
+- import_tasks: packages-centos.yml
+  when: ansible_os_family == "RedHat"

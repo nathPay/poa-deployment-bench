@@ -1,0 +1,6 @@
+---
+- import_tasks: chrony-ubuntu.yml
+  when: ansible_os_family == "Debian"
+
+- import_tasks: chrony-centos.yml
+  when: ansible_os_family == "RedHat"

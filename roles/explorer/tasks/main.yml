@@ -1,0 +1,52 @@
+---
+
+- name: Get public IP
+  ipify_facts:
+  register: public_ip
+
+- name: Create node.toml
+  template: src=node.toml.j2 dest={{ home }}/node.toml owner={{ username }} group={{ username }} mode=0644
+
+- name: Clone poanetworks/chain-explorer repo from GitHub
+  git:
+    repo: "https://github.com/{{ MAIN_REPO_FETCH }}/chain-explorer"
+    dest: "{{ home }}/chain-explorer"
+    version: "{{ explorer_version }}"
+
+- name: Install chain_explorer app.json
+  template: src=app.json.j2 dest={{ home }}/chain-explorer/app.json owner={{ username }} group={{ username }} mode=0644
+  notify:
+    - restart poa-chain-explorer
+
+- name: Set group and owner on the chain-explorer directory
+  file: path={{ home }}/chain-explorer owner={{ username }} group={{ username }} recurse=yes
+
+- name: install npm chain_explorer
+  npm:
+    path: "{{ home }}/chain-explorer"
+  become: true
+  become_user: "{{ username }}"
+  notify:
+    - restart poa-chain-explorer
+
+- name: Install chain_explorer config.js
+  template: src=config.js.j2 dest={{ home }}/chain-explorer/config.js owner={{ username }} group={{ username }} mode=0644
+  notify:
+    - restart poa-chain-explorer
+
+- name: Install poa-chain-explorer service
+  template: src=poa-chain-explorer.j2 dest=/etc/systemd/system/poa-chain-explorer.service owner=root group=root mode=0755
+  notify:
+    - restart poa-chain-explorer
+
+- name: Ensure poa-chain-explorer is running and enabled to start at boot
+  service: name=poa-chain-explorer state=started enabled=yes
+  
+- name: Setup ufw firewall
+  import_tasks: ufw.yml
+  when: install_firewall
+  
+- name: restart machine after setup
+  shell: shutdown -r 1
+  when: reboot_after_completion == true
+

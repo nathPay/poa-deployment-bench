@@ -1,0 +1,31 @@
+version: '3.4'
+services:
+    poa-dapps-keys-generation:
+      build: ./poa-dapps-keys-generation
+      image: poa-dapps-keys-generation
+      container_name: poa-dapps-keys-generation
+      ports:
+        - "{{ PROXY_PORT_1 }}:3000"
+      environment: 
+        - NODE_ENV=production
+      restart: unless-stopped
+
+    poa-dapps-validator:
+      build: ./poa-dapps-validators
+      image: poa-dapps-validator
+      container_name: poa-dapps-validator
+      ports:
+        - "{{ PROXY_PORT_2 }}:3000"
+      environment: 
+        - NODE_ENV=production
+      restart: unless-stopped
+
+    poa-dapps-voting:
+      build: ./poa-dapps-voting
+      image: poa-dapps-voting
+      container_name: poa-dapps-voting
+      ports:
+        - "{{ PROXY_PORT_3 }}:3000"
+      environment: 
+        - NODE_ENV=production
+      restart: unless-stopped

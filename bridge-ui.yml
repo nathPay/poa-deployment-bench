@@ -1,0 +1,4 @@
+- hosts: bridge-ui
+  become: True
+  roles:
+    - bridge-ui

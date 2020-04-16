@@ -1,0 +1,17 @@
+---
+
+PARITY_BIN_LOC: "https://releases.parity.io/ethereum/v2.5.8/x86_64-unknown-linux-gnu/parity"
+PARITY_BIN_SHA256: "2d8f0e0b785124ca3c569502280d615d28dfaf47e313d98d2376dd89a49eef7b"
+GENESIS_NETWORK_NAME: "PoA"
+ORCHESTRATOR_BIN_LOC: ""
+ORCHESTRATOR_BIN_SHA256: ""
+
+validator_archive: "off"
+bootnode_archive: "off"
+moc_archive: "off"
+bootnode_orchestrator: "off"
+
+username: "poa"
+users:
+  - name: "{{ username }}"
+home: "/home/{{ username }}"

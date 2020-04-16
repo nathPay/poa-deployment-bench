@@ -1,0 +1,123 @@
+---
+
+- name: Get public IP
+  ipify_facts:
+  register: public_ip
+
+- name: Create node.toml
+  template: src=node.toml.j2 dest={{ home }}/node.toml owner={{ username }} group={{ username }} mode=0644
+
+- name: Poa parity restarted
+  service: name=poa-parity state=restarted
+
+- name: Clone {{ MAIN_REPO_FETCH }}/blockscout repo from GitHub
+  git:
+    repo: "https://github.com/{{ MAIN_REPO_FETCH }}/blockscout"
+    dest: "{{ home }}/blockscout"
+    version: "{{ blockscout_version }}"
+    force: yes
+
+- name: Add explorer dev.secret
+  template:
+    src: secret.j2
+    dest: "{{ home }}/blockscout/apps/explorer/config/dev.secret.exs"
+
+- name: Add explorer prod.secret
+  template:
+    src: secret.j2
+    dest: "{{ home }}/blockscout/apps/explorer/config/prod.secret.exs"
+
+- name: Add block_scout_web dev.secret
+  copy:
+    src: '{{ home }}/blockscout/apps/block_scout_web/config/dev.secret.exs.example'
+    remote_src: yes
+    dest: '{{ home }}/blockscout/apps/block_scout_web/config/dev.secret.exs'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    mode: 0644
+
+- name: Add prod secret file to prod.exs
+  shell: echo 'import_config "prod.secret.exs"' >> {{ home }}/blockscout/apps/explorer/config/prod.exs
+
+#- name: Update JSON RPC Variant
+#  replace:
+#    path: '{{ item }}'
+#    regexp: 'ganache'
+#    replace: "parity"
+#  with_items:
+#  - "{{ home }}/blockscout/apps/explorer/config/dev.exs"
+#  - "{{ home }}/blockscout/apps/indexer/config/dev.exs"
+
+#- name: Config memory limit
+#  lineinfile:
+#    dest: '{{ home }}/blockscout/apps/indexer/config/config.exs'
+#    state: present
+#    regexp: "^.*memory_limit"
+#    line: '  memory_limit: {{ indexer_memory_limit }} <<< 30,'
+
+#- name: Update default network name (for Core network)
+#  lineinfile:
+#    dest: '{{ home }}/blockscout/apps/block_scout_web/config/config.exs'
+#    state: present
+#   regexp: "^.*SUBNETWORK"
+#    line: '  subnetwork: "POA Core",'
+#  when: GENESIS_BRANCH == "core"
+
+- name: Install dependencies
+  shell: cd {{ home }}/blockscout && mix local.hex --force && mix do deps.get, local.rebar --force, deps.compile, compile
+
+- name: Create user
+  become: true
+  become_user: postgres
+  postgresql_user:
+    name: '{{ db_user }}'
+    password: '{{ db_user_password }}'
+    role_attr_flags: CREATEDB,SUPERUSER
+
+- name: Create db
+  shell: cd {{ home }}/blockscout && mix do ecto.create, ecto.migrate
+
+- name: Install node-sass
+  shell: cd {{ home }}/blockscout/apps/block_scout_web/assets && npm install node-sass --unsafe-perm
+
+- name: Install node dependensies in the apps/block_scout_web
+  shell: cd {{ home }}/blockscout/apps/block_scout_web/assets && npm install && node_modules/webpack/bin/webpack.js --mode production
+
+- name: Install node dependensies in the apps/explorer
+  shell: cd {{ home }}/blockscout/apps/explorer && npm install
+
+- name: Ansible check file exists example.
+  stat:
+    path: "{{ home }}/blockscout/apps/block_scout_web/priv/cert/"
+  register: file_details
+
+- name: change native token name
+  shell: sed -i -E 'N;s/(msgid \"Ether\"\nmsgstr )\".*\"/\1\"{{ NATIVE_NAME }}\"/;P;D' {{ home }}/blockscout/apps/block_scout_web/priv/gettext/en/LC_MESSAGES/default.po
+
+- name: Delete old certificates
+  shell: cd {{ home }}/blockscout/apps/block_scout_web/priv/cert/ && rm *.pem
+  when: file_details.stat.exists
+
+- name: Generate certificates
+  shell: cd {{ home }}/blockscout/apps/block_scout_web && mix phx.gen.cert {{ LETSENCRYPT_DOMAIN_NAME_1 }}
+
+- name: Install poa-blockscout service
+  template: src=poa-blockscout.j2 dest=/etc/systemd/system/poa-blockscout.service owner={{ username }} group={{ username }} mode=0755
+
+- name: force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+
+- name: restart poa-blockscout
+  service: name=poa-blockscout state=restarted
+
+- name: Ensure poa-blockscout is running and enabled to start at boot
+  service: name=poa-blockscout state=started enabled=yes
+
+- name: Setup ufw firewall
+  import_tasks: ufw.yml
+  when: install_firewall
+
+- name: restart machine after setup
+  shell: shutdown -r 1
+  when: reboot_after_completion == true

@@ -1,0 +1,14 @@
+[Unit]
+Description=poa parity service
+After=network.target
+[Service]
+User={{ username }}
+Group={{ username }}
+WorkingDirectory={{ home }}
+{% if validator_archive|default("off") == "on" or bootnode_archive|default("off") == "on" or moc_archive|default("off") == "on" %}
+Environment=RUST_BACKTRACE=1
+{% endif %}
+ExecStart={{ home }}/parity --config=node.toml {{ '--whisper' if bootnode_orchestrator|default("off") == "on" else '' }}
+Restart=always
+[Install]
+WantedBy=multi-user.target
