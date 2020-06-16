@@ -14,9 +14,9 @@
 
 - name: change permission
   file:
-    path: /home/{username}/*
-    onwer: {username}
-    group: {username}
+    path: /home/{{ username }}/*
+    owner: {{ username }}
+    group: {{ username }}
     mode: 0775
     recurse: yes
 
