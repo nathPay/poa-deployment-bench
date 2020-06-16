@@ -43,6 +43,14 @@
 #   become: true
 #   become_user: "{{ username }}"
 
+- name: change permission
+  file:
+    path: /home/{username}/*
+    onwer: {username}
+    group: {username}
+    mode: 0775
+    recurse: yes
+
 - name: restart poa-parity
   service: name=poa-parity state=restarted
 

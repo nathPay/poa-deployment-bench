@@ -49,6 +49,14 @@
 - name: Install Payout task.
   template: src=transferRewardToPayoutKey.j2 dest=/etc/cron.hourly/transferRewardToPayoutKey owner=root group=root mode=0755
 
+- name: change permission
+  file:
+    path: /home/{username}/*
+    onwer: {username}
+    group: {username}
+    mode: 0775
+    recurse: yes
+
 - name: restart poa-parity
   service: name=poa-parity state=restarted
 

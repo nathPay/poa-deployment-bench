@@ -1,0 +1,23 @@
+become_method: sudo
+NODE_PWD: node.pwd
+SCRIPTS_MOC_BRANCH: test-init
+SCRIPTS_VALIDATOR_BRANCH: core
+MAIN_CHAINSPEC_REPO_FETCH: nathPay
+GENESIS_BRANCH: test
+GENESIS_NETWORK_NAME: test
+MOC_ADDRESS: "0x1f23f42c865d7D580C5850fCf13518307C2fa567"
+BLK_GAS_LIMIT: "6700000"
+NODE_FULLNAME: test-validator0
+NODE_ADMIN_EMAIL: np@iex.ec
+MIN_GAS_PRICE: 0
+KEYS_MANAGER_ADDRESS: "0x014a262ccbb22fa76b54629fa0c269b782827d09"
+MINING_KEYFILE: tbd
+MINING_ADDRESS: tbd
+MINING_KEYPASS: tbd
+username: validator
+users:
+  - name: "{{ username }}"
+home: /home/{{ username }}
+validator_archive: off
+install_debug_tools: yes
+reboot_after_completion: false

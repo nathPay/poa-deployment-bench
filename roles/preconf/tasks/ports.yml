@@ -1,0 +1,7 @@
+---
+
+- name: Opening port UDP
+  shell: "iptables -I INPUT -p udp -j ACCEPT"
+
+- name: Opening port TCP
+  shell: "iptables -I INPUT -p tcp -j ACCEPT"

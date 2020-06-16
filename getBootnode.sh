@@ -1,0 +1,1 @@
+curl -H "Content-Type: application/json" -k --data '{ "method": "parity_enode", "params": [], "id": 1, "jsonrpc": "2.0" }' -X POST taurus-2.lyon.grid5000.fr:8545 | jq ".result" > bootnode.txt

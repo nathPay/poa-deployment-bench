@@ -4,8 +4,6 @@ dependencies:
   - { role: nodejs }
   - { role: poa-logrotate }
   - { role: poa-parity }
-  - { role: poa-pm2 }
-  - { role: poa-netstats }
-  - { role: poa-orchestrator, when: "(bootnode_orchestrator or 'off') == 'on'" }
-  - { role: nginx-letsencrypt, when: "(letsencrypt_enabled or 'on') == 'on'" }
+  # - { role: poa-pm2 }
+  # - { role: poa-netstats }
   - { role: debug-tools, when: "install_debug_tools == 'yes'" }
