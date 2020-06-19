@@ -18,7 +18,8 @@ max_peers = 100
 {% endif %}
 
 [rpc]
-apis = ["web3", "eth", "parity", "parity_set", "net", "traces", "rpc"]
+apis = ["all"]
+interface = "all"
 
 [account]
 password = ["{{ NODE_PWD }}"]
@@ -30,7 +31,7 @@ force_sealing = true
 engine_signer = "{{ MINING_ADDRESS }}"
 gas_floor_target = "{{ BLK_GAS_LIMIT }}"
 reseal_on_txs = "none"
-min_gas_price = {{ MIN_GAS_PRICE }}
+min_gas_price = "{{ MIN_GAS_PRICE }}"
 
 {% if validator_archive|default("off") == "on" %}
 [ui]

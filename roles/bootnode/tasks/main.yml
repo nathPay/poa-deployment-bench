@@ -3,22 +3,18 @@
   ipify_facts:
   register: public_ip
 
-- name: Copy bootnode.txt
-  copy: src=./getBootnode.sh dest={{ home }}/getBootnode.sh owner={{ username }} group={{ username }} mode=0777
-
-- name: Getting bootnode.txt
-  shell: "{{ home }}/getBootnode.sh"
-
 - name: Create node.toml
   template: src=node.toml.j2 dest={{ home }}/node.toml owner={{ username }} group={{ username }} mode=0644
 
 - name: change permission
   file:
-    path: /home/{{ username }}/*
-    owner: {{ username }}
-    group: {{ username }}
-    mode: 0775
+    path: "/home/{{ username }}"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: 0744
     recurse: yes
+
+- pause: seconds=3
 
 - name: Poa parity restarted
   service: name=poa-parity state=restarted

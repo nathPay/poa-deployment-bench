@@ -1,20 +1,40 @@
+---
+
 become_method: sudo
-NODE_PWD: node.pwd
-SCRIPTS_MOC_BRANCH: test-init
-SCRIPTS_VALIDATOR_BRANCH: master
-MAIN_CHAINSPEC_REPO_FETCH: nathPay
-GENESIS_BRANCH: test
-GENESIS_NETWORK_NAME: test
-MOC_ADDRESS: "0x1f23f42c865d7D580C5850fCf13518307C2fa567"
+
+NODE_PWD: "node.pwd" # don't change this one
+
+SCRIPTS_MOC_BRANCH: "" #chainName-init
+SCRIPTS_VALIDATOR_BRANCH: "master"
+MAIN_CHAINSPEC_REPO_FETCH: "" #repo (nathPay)
+# MAIN_REPO_FETCH: "poanetwork"
+GENESIS_BRANCH: "" #chainName
+GENESIS_NETWORK_NAME: "" #chainName
+
+MOC_ADDRESS: "" #0xmocAddress
 BLK_GAS_LIMIT: "6700000"
-NODE_FULLNAME: test-bootnode
-NODE_ADMIN_EMAIL: np@iex.ec
-username: bootnode
+NODE_FULLNAME: "" #chainName-bootnode
+NODE_ADMIN_EMAIL: "" #email@exem.ple
+
+# LETSENCRYPT_MAIL: "" #email@exem.ple
+# LETSENCRYPT_DOMAIN_NAME_1: "viviani.iex.ec"
+# PROXY_PORT_1: "8545"
+# LETSENCRYPT_DOMAIN_NAME_2: "viviani-ws.iex.ec"
+# PROXY_PORT_2: "8546"
+# nginx_headers: "on"
+
+# NETSTATS_SERVER: "https://netstat-viviani.iex.ec"
+# NETSTATS_SECRET: "tbd"
+
+username: "bootnode"
 users:
   - name: "{{ username }}"
-home: /home/{{ username }}
+home: "/home/{{ username }}"
+
 configure_extended_tcp_settings: false
-bootnode_archive: off
-bootnode_orchestrator: off
-install_debug_tools: yes
+
+bootnode_archive: "off"
+bootnode_orchestrator: "off"
+
+install_debug_tools: "yes"
 reboot_after_completion: false

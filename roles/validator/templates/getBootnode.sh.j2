@@ -1,0 +1,2 @@
+curl -H "Content-Type: application/json" -k --data '{ "method": "parity_enode", "params": [], "id": 1, "jsonrpc": "2.0" }' -X POST {{ bootnode_host }}:8545 | jq ".result" > /home/{{ username }}/tmp.txt
+sed 's/\"//g' /home/{{ username }}/tmp.txt > /home/{{ username }}/bootnodes.txt

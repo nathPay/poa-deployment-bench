@@ -17,15 +17,16 @@ discovery = false
 
 [rpc]
 #apis = ["web3", "eth", "parity", "parity_set", "net", "traces", "rpc"]
-apis = ["web3","eth","net"{{', "parity"' if (bootnode_orchestrator|default("off") == "on" or parity_api|default("off") == "on") else ''}}{{', "parity_set", "shh"' if bootnode_orchestrator|default("off") == "on" else ''}}]
+apis = ["all"]
 processing_threads = 4
 cors=["all"]
+interface = "all"
 
 [websockets]
 disable = false
 port = 8546
-interface = "local"
-apis = ["web3", "eth", "pubsub", "net", "parity", "parity_pubsub", "traces", "rpc", "shh", "shh_pubsub"]
+interface = "all"
+apis = ["all"]
 
 [ui]
 disable = true

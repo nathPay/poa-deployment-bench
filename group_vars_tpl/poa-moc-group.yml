@@ -30,6 +30,7 @@ users:
 home: "/home/{{ username }}"
 
 moc_archive: "off"
+bootnode_host: 
 
 install_debug_tools: "yes"
 reboot_after_completion: false

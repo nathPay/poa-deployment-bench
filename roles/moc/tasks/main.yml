@@ -45,12 +45,26 @@
 
 - name: change permission
   file:
-    path: /home/{{ username }}/*
-    owner: {{ username }}
-    group: {{ username }}
-    mode: 0775
+    path: /home/{{ username }}
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: 0744
     recurse: yes
 
+- name: Create getBootnode.sh
+  template: src=getBootnode.sh.j2 dest={{ home }}/getBootnode.sh owner={{ username }} group={{ username }} mode=0777
+  
+- name: getting bootnode
+  shell:
+    cmd: /home/{{ username }}/getBootnode.sh {{ bootnode_host }}
+
+- pause: seconds=2
+
+- name: remove " from bootnodes
+  shell:
+    cmd: sed 's/\"//g' /home/{{ username }}/tmp.txt > bootnodes.txt
+
+- pause: seconds=3
 
 - name: restart poa-parity
   service: name=poa-parity state=restarted
